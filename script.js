@@ -17,7 +17,7 @@ function signup() {
     email.value,
     password.value
   );
-  promise.catch((e) => alert(e.message));
+  promise.catch(e => alert(e.message));
   alert("Hurray!Account Created");
 }
 
