@@ -2,6 +2,8 @@ var firebaseConfig = {
   apiKey: "AIzaSyDW3KrksIXp_EFetEajg-jbsOhUO9-O5Zg",
   authDomain: "petition-writing.firebaseapp.com",
   projectId: "petition-writing",
+  databaseURL: "https://petition-writing-default-rtdb.firebaseio.com",
+
   storageBucket: "petition-writing.appspot.com",
   messagingSenderId: "276645271695",
   appId: "1:276645271695:web:c2cfccda006f8f029078fa",
@@ -10,38 +12,43 @@ var firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-function signup() {
-  var email = document.getElementById("email");
-  var password = document.getElementById("password");
-  const promise = auth.createUserWithEmailAndPassword(
-    email.value,
-    password.value
-  );
-  promise.catch(e => alert(e.message));
+function signUp() {
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("password").value;
+  var fname = document.getElementById("fname").value;
+  
+
+  const promise = auth
+    .createUserWithEmailAndPassword(email, password)
+    .then(function () {
+      var id = firebase.auth().currentUser.uid;
+     
+      firebase
+        .database()
+        .ref("Users/" + id)
+        .set({
+          fname: fname,
+          
+          email: email,
+          password: password,
+        });
+    });
+  promise.catch((e) => alert(e.message));
+
   alert("Hurray!Account Created");
 }
 
-function login() {
-  var email = document.getElementById("email");
-  var password = document.getElementById("password");
-
-  const promise = auth.signInWithEmailAndPassword(email.value, password.value).then(function(){
-    window.location.replace("file:///D:/Desktop/Git%20and%20Github/index3.html");
-  });
+function signIn() {
+  var email = document.getElementById("email").value;
+  var password = document.getElementById("password").value;
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, password)
+    .then(function () {
+      var id = firebase.auth().currentUser.uid;
+      window.location.replace("index3.html");
+      localStorage.setItem("id", id);
+    });
   promise.catch((e) => alert(e.message));
   alert("Signed In" + email);
 }
-
-auth.onAuthStateChanged(function (user) {
-  if (user) {
-    var email = user.email;
-    alert("Active User " + email);
-
-    //Take user to a different or home page
-
-    //is signed in
-  } else {
-    alert("No Active User");
-    //no user is signed indd
-  }
-});
